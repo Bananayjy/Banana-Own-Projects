@@ -11,6 +11,8 @@
     <groupId>com.example</groupId>
     <artifactId>demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
     <name>demo</name>
     <description>Demo project for Spring Boot</description>
 
@@ -41,9 +43,22 @@
         <!--mybatis 联表wrapper-->
         <dependency>
             <groupId>com.github.yulichang</groupId>
-            <artifactId>mybatis-plus-join</artifactId>
-            <version>1.2.4</version>
+            <artifactId>mybatis-plus-join-boot-starter</artifactId>
+            <version>1.4.7.2</version>
         </dependency>
+        <!--Easy Excel-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>3.3.2</version>
+        </dependency>
+        <!--json处理器-->
+        <dependency>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+            <version>2.0.3</version>
+        </dependency>
+
 
 
         <!--③数据库相关-->
