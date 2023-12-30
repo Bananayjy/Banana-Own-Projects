@@ -3,24 +3,25 @@ package com.example;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.enums.CellExtraTypeEnum;
 import com.alibaba.excel.read.listener.PageReadListener;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.alibaba.excel.util.ListUtils;
 import com.alibaba.fastjson2.JSON;
-import com.example.listener.ConverterDataListener;
-import com.example.listener.DemoHeadDataListener;
-import com.example.listener.IndexOrNameDataListener;
-import com.example.listener.ReadDemoDataListener;
-import com.example.model.pojo.ConverterData;
-import com.example.model.pojo.IndexOrNameData;
-import com.example.model.pojo.ReadDemoData;
+import com.example.listener.*;
+import com.example.model.pojo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 @Slf4j
@@ -188,13 +189,30 @@ class DemoApplicationTests {
     public void complexHeaderRead() {
         String fileName = getExcelUrl("readExcel.xlsx");
         // 这里 需要指定读用哪个class去读，然后读取第一个sheet
-        EasyExcel.read(fileName, ReadDemoData.class, new ReadDemoDataListener()).sheet()
+        EasyExcel.read(fileName, ReadDemoData.class, new DemoHeadDataListener()).sheet()
                 // 这里可以设置1，因为头就是一行。如果多行头，可以设置其他值。不传入也可以，因为默认会根据DemoData 来解析，他没有指定头，也就是默认1行
-                .headRowNumber(0).doRead();
+                .headRowNumber(2).doRead();
     }
 
 
-
+    /**
+     * 6、同步的返回，不推荐使用，如果数据量大会把数据放到内存里面
+     */
+    @Test
+    public void synchronousRead() {
+        String fileName = getExcelUrl("readExcel.xlsx");
+        // 这里 需要指定读用哪个class去读，然后读取第一个sheet 同步读取会自动finish
+        List<ReadDemoData> list = EasyExcel.read(fileName).head(ReadDemoData.class).sheet().doReadSync();
+        for (ReadDemoData data : list) {
+            log.info("1读取到数据:{}", JSON.toJSONString(data));
+        }
+        // 这里 也可以不指定class，返回一个list，然后读取第一个sheet 同步读取会自动finish
+        List<Map<Integer, String>> listMap = EasyExcel.read(fileName).sheet().doReadSync();
+        for (Map<Integer, String> data : listMap) {
+            // 返回每条数据的键值对 表示所在的列 和所在列的值
+            log.info("2读取到数据:{}", JSON.toJSONString(data));
+        }
+    }
 
     /**
      * 7、读取表头数据
@@ -211,6 +229,72 @@ class DemoApplicationTests {
         String fileName = getExcelUrl("readExcel.xlsx");
         // 这里 需要指定读用哪个class去读，然后读取第一个sheet
         EasyExcel.read(fileName, ReadDemoData.class, new DemoHeadDataListener()).sheet().doRead();
+    }
+
+
+
+    /**
+     * 8、额外信息（批注、超链接、合并单元格信息读取）
+     * <p>
+     * 由于是流式读取，没法在读取到单元格数据的时候直接读取到额外信息，所以只能最后通知哪些单元格有哪些额外信息
+     *
+     * <p>
+     * 1. 创建excel对应的实体对象 参照{@link DemoExtraData}
+     * <p>
+     * 2. 由于默认异步读取excel，所以需要创建excel一行一行的回调监听器，参照{@link DemoExtraListener}
+     * <p>
+     * 3. 直接读即可
+     *
+     * @since 2.2.0-beat1
+     */
+    @Test
+    public void extraRead() {
+        String fileName = getExcelUrl("extra.xlsx");
+        // 这里 需要指定读用哪个class去读，然后读取第一个sheet
+        EasyExcel.read(fileName, DemoExtraData.class, new DemoExtraListener())
+                // 需要读取批注 默认不读取
+                .extraRead(CellExtraTypeEnum.COMMENT)
+                // 需要读取超链接 默认不读取
+                .extraRead(CellExtraTypeEnum.HYPERLINK)
+                // 需要读取合并单元格信息 默认不读取
+                .extraRead(CellExtraTypeEnum.MERGE).sheet().doRead();
+    }
+
+    /**
+     * 9、读取公式和单元格类型
+     *
+     * <p>
+     * 1. 创建excel对应的实体对象 参照{@link CellDataReadDemoData}
+     * <p>
+     * 2. 由于默认一行行的读取excel，所以需要创建excel一行一行的回调监听器，参照{@link DemoHeadDataListener}
+     * <p>
+     * 3. 直接读即可
+     *
+     * @since 2.2.0-beat1
+     */
+    @Test
+    public void cellDataRead() {
+        String fileName = getExcelUrl("CellDataReadExcel.xlsx");
+        // 这里 需要指定读用哪个class去读，然后读取第一个sheet
+        EasyExcel.read(fileName, CellDataReadDemoData.class, new CellDataDemoHeadDataListener()).sheet().doRead();
+    }
+
+
+    /**
+     * 10、数据转换等异常处理
+     *
+     * <p>
+     * 1. 创建excel对应的实体对象 参照{@link ExceptionDemoData}
+     * <p>
+     * 2. 由于默认一行行的读取excel，所以需要创建excel一行一行的回调监听器，参照{@link DemoExceptionListener}
+     * <p>
+     * 3. 直接读即可
+     */
+    @Test
+    public void exceptionRead() {
+        String fileName = getExcelUrl("readExcel.xlsx");
+        // 这里需要指定读用哪个class去读，然后读取第一个sheet
+        EasyExcel.read(fileName, ExceptionDemoData.class, new DemoExceptionListener()).sheet().doRead();
     }
 
     //根据文件名称，获取Excel目录地址

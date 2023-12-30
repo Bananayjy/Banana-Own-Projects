@@ -1,11 +1,14 @@
 package com.example.listener;
 
 import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.exception.ExcelDataConvertException;
 import com.alibaba.excel.metadata.CellExtra;
 import com.alibaba.excel.metadata.data.ReadCellData;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.util.ListUtils;
 import com.alibaba.fastjson2.JSON;
+import com.example.model.pojo.CellDataReadDemoData;
+import com.example.model.pojo.ExceptionDemoData;
 import com.example.model.pojo.ReadDemoData;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,39 +16,43 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 读取表头数据监听器
+ * 数据转换等异常处理监听器
  * @author banana
- * @create 2023-12-26 23:49
+ * @create 2023-12-30 17:55
  */
 @Slf4j
-public class DemoHeadDataListener implements ReadListener<ReadDemoData> {
+public class DemoExceptionListener implements ReadListener<ExceptionDemoData> {
+
     //每隔100条存储数据库，然后清理list，方便内存的回收
     private static final int BATCH_COUNT = 100;
 
     //缓存数据
-    private List<ReadDemoData> cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
+    private List<ExceptionDemoData> cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
 
 
     //在解析 Excel 过程中发生异常时调用的方法。可以在该方法中记录日志或者进行异常处理等操作
+    //在转换异常 获取其他异常下会调用本接口。抛出异常则停止读取。如果这里不抛出异常则 继续读取下一行。
     @Override
     public void onException(Exception e, AnalysisContext analysisContext) throws Exception {
-
+        log.error("解析失败，但是继续解析下一行:{}", e.getMessage());
+        // 如果是某一个单元格的转换异常 能获取到具体行号
+        // 如果要获取头的信息 配合invokeHeadMap使用
+        if (e instanceof ExcelDataConvertException) {
+            ExcelDataConvertException excelDataConvertException = (ExcelDataConvertException)e;
+            log.error("第{}行，第{}列解析异常，数据为:{}", excelDataConvertException.getRowIndex(),
+                    excelDataConvertException.getColumnIndex(), excelDataConvertException.getCellData());
+        }
     }
-
-
 
     //在读取 Excel 文件表头时调用的方法。可用于对表头进行校验或者记录日志等操作
     @Override
     public void invokeHead(Map<Integer, ReadCellData<?>> headMap, AnalysisContext context) {
-        log.info("解析到一条头数据:{}", JSON.toJSONString(headMap));
-        // 如果想转成成 Map<Integer,String>
-        // 方案1： 不要implements ReadListener 而是 extends AnalysisEventListener
-        // 方案2： 调用 ConverterUtils.convertToStringMap(headMap, context) 自动会转换
+
     }
 
     //在读取到一条数据时调用的方法。T 表示读取到的数据类型。可以在该方法中对读取到的数据进行处理或者记录日志等操作
     @Override
-    public void invoke(ReadDemoData readDemoData, AnalysisContext analysisContext) {
+    public void invoke(ExceptionDemoData readDemoData, AnalysisContext analysisContext) {
         log.info("解析到一条数据：{}", JSON.toJSONString(readDemoData));
         cachedDataList.add(readDemoData);
         //达到BATCH_COUNT了,清空缓存，并可以去做一些处理（如存储一次数据库）
@@ -75,6 +82,9 @@ public class DemoHeadDataListener implements ReadListener<ReadDemoData> {
 
         log.info("所有数据解析完成!");
     }
+
+
+
 
     //判断是否还有下一条数据需要读取。如果返回 true，会自动调用 invoke(T data, AnalysisContext analysisContext) 方法来读取下一条数据；
     // 如果返回 false，则结束读取数据的过程。

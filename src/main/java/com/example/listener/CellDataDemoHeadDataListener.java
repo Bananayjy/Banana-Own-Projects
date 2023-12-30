@@ -6,6 +6,8 @@ import com.alibaba.excel.metadata.data.ReadCellData;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.util.ListUtils;
 import com.alibaba.fastjson2.JSON;
+import com.example.model.pojo.CellDataReadDemoData;
+import com.example.model.pojo.ConverterData;
 import com.example.model.pojo.ReadDemoData;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,17 +15,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 读取表头数据监听器
+ * 读取公式和单元格类型监听器
  * @author banana
- * @create 2023-12-26 23:49
+ * @create 2023-12-28 22:08
  */
 @Slf4j
-public class DemoHeadDataListener implements ReadListener<ReadDemoData> {
+public class CellDataDemoHeadDataListener implements ReadListener<CellDataReadDemoData> {
+
     //每隔100条存储数据库，然后清理list，方便内存的回收
     private static final int BATCH_COUNT = 100;
 
     //缓存数据
-    private List<ReadDemoData> cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
+    private List<CellDataReadDemoData> cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
 
 
     //在解析 Excel 过程中发生异常时调用的方法。可以在该方法中记录日志或者进行异常处理等操作
@@ -45,7 +48,7 @@ public class DemoHeadDataListener implements ReadListener<ReadDemoData> {
 
     //在读取到一条数据时调用的方法。T 表示读取到的数据类型。可以在该方法中对读取到的数据进行处理或者记录日志等操作
     @Override
-    public void invoke(ReadDemoData readDemoData, AnalysisContext analysisContext) {
+    public void invoke(CellDataReadDemoData readDemoData, AnalysisContext analysisContext) {
         log.info("解析到一条数据：{}", JSON.toJSONString(readDemoData));
         cachedDataList.add(readDemoData);
         //达到BATCH_COUNT了,清空缓存，并可以去做一些处理（如存储一次数据库）
