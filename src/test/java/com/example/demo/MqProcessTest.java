@@ -1,30 +1,25 @@
-package com.example.controller;
-
+package com.example.demo;
 
 import com.example.model.entity.Demo;
-import org.springframework.amqp.rabbit.connection.CorrelationData;
+import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
-import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 /**
  * @author banana
- * @create 2023-10-06 21:57
+ * @create 2024-07-13 19:17
  */
-@RestController
-@RequestMapping("/demo")
-public class democontroller {
+@SpringBootTest
+public class MqProcessTest {
 
-    @Resource
+    @Autowired
     private RabbitTemplate rabbitTemplate;
 
 
-    @GetMapping("/test")
-    public void test() {
+    @Test
+    public void sendmessageTest() {
+
         // 定义发送消息内容
         String msg = "this is a msg test!";
 
@@ -43,9 +38,9 @@ public class democontroller {
          * 注意：发送消息的时候，如果消息是个对象，我们会使用序列化机制，将对象发送出去
          * 并且，对象必须实现爱你Serializable
          */
-        /*rabbitTemplate.convertAndSend("banana-direct-exchange", "banana-common", demo);*/
-        rabbitTemplate.convertAndSend("banana-direct-exchange", "banana-common", demo,
-                new CorrelationData(UUID.randomUUID().toString()));
+        rabbitTemplate.convertAndSend("banana-direct-exchange", "banana-common", demo);
         System.out.println("消息发送成！");
     }
+
+
 }

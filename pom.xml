@@ -37,6 +37,11 @@
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
         </dependency>
+        <!--rabbit-mq快速启动依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
 
         <!--③数据库相关-->
         <dependency>
