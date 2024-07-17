@@ -1,11 +1,10 @@
 package com.example.listener;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.druid.support.json.JSONUtils;
 import com.example.mapper.DemoMapper;
 import com.example.model.pojo.R;
 import com.example.service.demoService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -24,8 +23,9 @@ public class AsyncTestListener implements AsyncListener,Runnable {
     @Resource
     private demoService demoService;
 
-    boolean isComplete;
+    boolean isComplete = true;
     int i = 1;
+
  
    /* private RedisTemplate<String, String> redisTemplate;*/
 
@@ -47,13 +47,8 @@ public class AsyncTestListener implements AsyncListener,Runnable {
     @Override
     public void run() {
         try {
-            while(true){
-                if(isComplete){
-                    log.info("已经退出");
-                    break;
-                }
-                System.out.println("guagua" + i ++);
-                System.out.println(Thread.currentThread().getName());
+            while(isComplete){
+                System.out.println(Thread.currentThread().getName() + ":hhhh:" + i++);
                 Thread.sleep(300);
             }
  
@@ -65,14 +60,18 @@ public class AsyncTestListener implements AsyncListener,Runnable {
     @Override
     public void onComplete(AsyncEvent asyncEvent) throws IOException {
         log.info("结束了");
-        isComplete = true;
- 
+        isComplete = false;
+        ServletResponse response = asyncEvent.getAsyncContext().getResponse();
+        response.setContentType("text/plain");
+        response.getWriter().write("123456");
+        response.getWriter().flush();
+        asyncEvent.getAsyncContext().complete();
     }
  
     @Override
     public void onTimeout(AsyncEvent asyncEvent) throws IOException {
         log.info("超时了");
-        ServletResponse response = asyncEvent.getAsyncContext().getResponse();
+        /*ServletResponse response = asyncEvent.getAsyncContext().getResponse();
         // 设置响应内容类型为 JSON
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -86,7 +85,7 @@ public class AsyncTestListener implements AsyncListener,Runnable {
         out.flush();
 
         // 一定要结束，不然应该会有默认方法，导致重复对输出流进行编写
-        asyncEvent.getAsyncContext().complete();
+        asyncEvent.getAsyncContext().complete();*/
     }
  
     @Override
