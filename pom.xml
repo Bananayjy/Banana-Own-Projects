@@ -19,16 +19,16 @@
 
     <dependencies>
         <!--①核心依赖-->
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
+        </dependency>-->
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
 
         <!--②扩展依赖-->
         <!--lombok-->
@@ -39,23 +39,23 @@
         </dependency>
 
         <!--③数据库相关-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>8.0.32</version>
-        </dependency>
+        </dependency>-->
         <!--mybatis-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>3.5.3.1</version>
-        </dependency>
+        </dependency>-->
         <!-- druid 连接池 **-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
             <version>1.2.9</version>
-        </dependency>
+        </dependency>-->
 
     </dependencies>
 
