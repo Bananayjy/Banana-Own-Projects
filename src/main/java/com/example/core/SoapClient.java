@@ -422,6 +422,11 @@ public class SoapClient extends HttpBase<SoapClient> {
         return SoapUtil.toString(this.message, pretty, this.charset);
     }
 
+    public static SOAPElement setParam(SOAPElement ele, String name, Object value) {
+        String prefix = ele.getPrefix();
+        return setParam(ele, name, value, prefix);
+    }
+
     public static SOAPElement setParam(SOAPElement ele, String name, Object value, String prefix) {
         SOAPElement childEle;
         SOAPException e;

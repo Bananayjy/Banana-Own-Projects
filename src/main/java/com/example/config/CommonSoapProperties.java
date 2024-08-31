@@ -30,6 +30,11 @@ public class CommonSoapProperties {
     private String nameSpacePrefix;
 
     /**
+     * 是否使用CDATA
+     */
+    private boolean ifCDATA;
+
+    /**
      * 自定义命名空间
      * key:名称 value:命名空间
      */
@@ -63,7 +68,7 @@ public class CommonSoapProperties {
         private String namespace;
 
         @Nullable
-        private List<KtSoapProperties.Param> params = new ArrayList<>();
+        private List<Param> params = new ArrayList<>();
     }
 
 
