@@ -1,13 +1,19 @@
-package com.example.utils;
+package com.example;
 
 import cn.hutool.core.util.StrUtil;
 import com.example.config.CommonSoapProperties;
 import com.example.core.ElementNode;
 import com.example.core.SoapClient;
 import com.example.enums.SoapProtocol;
+import com.example.utils.SoapUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 
 import javax.annotation.PostConstruct;
+import javax.xml.namespace.QName;
 import javax.xml.soap.*;
 import java.io.IOException;
 import java.util.*;
@@ -91,7 +97,6 @@ public class TEST {
 
     public static void main(String[] args) throws SOAPException, IOException {
 
-
         // 直接使用hutool的Soap构造Soap的请求体
         /*SoapClient client = SoapUtil.createClient("http://www.webxml.com.cn/WebServices/IpAddressSearchWebService.asmx",
                         SoapProtocol.SOAP_1_2, "www.WondersHSBP.com")
@@ -102,16 +107,67 @@ public class TEST {
                 .setParam("param", 1);*/
 
 
-        SoapClient client = SoapUtil.createClient("123", SoapProtocol.SOAP_1_2);
-        // 自定义soap命名空间前缀
-        client.setPrefix("abc");
-        Map<String, String> nameSpaceDeclaration = new HashMap<>();
+        SoapClient client = SoapUtil.createClientKt("123", SoapProtocol.SOAP_1_2, "123");
+        client.setParam("hahah", "4567");
+        client.setParam("hahah2", "4567");
+        client.setParam("hahah3", "4522");
+        client.setParam("hahah4", "456722");
+        client.setMethod("won:miaoMethdo", "www.baidu.com");
+        client.setParam("hahah5", "111");
+        client.setParam("hahah6", "22");
 
-        // 自定义命名空间
-        nameSpaceDeclaration.put("won", "www.WondersHSBP.com");
-        client.addNameSpaceDeclaration(nameSpaceDeclaration);
 
-        client.setMethod("won:method");
+        SOAPBodyElement methodEle = client.getMethodEle();
+
+
+        // 第一个元素的变更
+        Node firstChild = methodEle.getFirstChild();
+        System.out.println(firstChild);
+
+        Node firstChild1 = firstChild.getFirstChild();
+        String nodeValue = firstChild1.getNodeValue();
+        firstChild1.setNodeValue("456");
+        System.out.println(firstChild1.getNodeValue());
+
+
+
+        // 查找指定端点
+        QName qName = new QName("www.WondersHSBP.com", "parameter");
+
+
+        // 获取指定方法（请求体中的元素）
+
+        //  自定义方法获取方法元素
+        SOAPBodyElement methodEleByName = client.getMethodEleByName("won:miaoMethdo");
+        System.out.println(methodEleByName);
+
+        // 加参数
+        /*QName qName1 = new QName("test", "test", "test");
+        methodEleByName.addChildElement(qName1);*/
+        client.setParam(methodEleByName, "test", "123", "won");
+
+        // 获取方法中的所有参数 √
+        Node firstNode = methodEleByName.getFirstChild();
+        while(firstNode != null){
+            System.out.println(firstNode.getTextContent());
+            firstNode = firstNode.getNextSibling();
+        }
+
+
+        // 找具体方法中的子节点
+        Iterator invokeRequest = methodEle.getChildElements(qName);
+        while(invokeRequest.hasNext()) {
+            Node next = (Node)invokeRequest.next();
+            String textContent = next.getTextContent();
+
+            Node nextSibling = next.getNextSibling();
+            while(nextSibling != null) {
+                System.out.println(nextSibling.getTextContent());
+                nextSibling = nextSibling.getNextSibling();
+            }
+
+        }
+
 
         System.out.println(client.getMsgStr(true));
 

@@ -14,6 +14,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author banana
@@ -32,6 +34,21 @@ public class SoapUtil {
     public static SoapClient createClient(String url, SoapProtocol protocol, String namespaceURI) {
         return SoapClient.create(url, protocol, namespaceURI);
     }
+
+    /**
+     * 创建金唐通用的soap请求接口
+     * @param url 请求地址
+     * @param soapProtocol soap协议版本
+     * @param param 请求参数
+     * @return soap请求客户端
+     */
+    public static SoapClient createClientKt(String url, SoapProtocol soapProtocol, String param) {
+        Map<String, String> defaultNameSpaceDeclaration = new HashMap<String, String>();
+        defaultNameSpaceDeclaration.put("won", "www.WondersHSBP.com");
+        return createClient(url, soapProtocol).addNameSpaceDeclaration(defaultNameSpaceDeclaration)
+                .setMethod("won:invokeRequest").setParam("parameter", param);
+    }
+
 
     public static String toString(SOAPMessage message, boolean pretty) {
         return toString(message, pretty, CharsetUtil.CHARSET_UTF_8);

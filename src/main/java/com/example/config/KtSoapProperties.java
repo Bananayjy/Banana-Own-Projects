@@ -8,37 +8,30 @@ import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
+ * 金唐通用soap请求
+ *
+ * 绑定示例：
+ * kt-soap:
+ *   method:
+ *     methodName: "exampleMethod"
+ *     namespace: "http://example.com/namespace"
+ *     params:
+ *       - name: "param1"
+ *         value: "value1"
+ *       - name: "param2"
+ *         value: 123
+ *       - name: "param3"
+ *         value: true
+ *
  * @author banana
- * @create 2024-08-29 17:54
+ * @create 2024-08-31 9:48
  */
 @Data
 @Configuration
-@ConfigurationProperties("soap")
-public class CommonSoapProperties {
-
-    /**
-     * 请求url地址
-     */
-    private String url;
-
-    /**
-     * soap命名空间前缀
-     */
-    private String nameSpacePrefix;
-
-    /**
-     * 自定义命名空间
-     * key:名称 value:命名空间
-     */
-    private Map<String, String> nameSpaceDeclaration;
-
-
-    /**
-     * 自定义方法
-     */
+@ConfigurationProperties("kt-soap")
+public class KtSoapProperties {
 
     /**
      * 方法
@@ -63,7 +56,7 @@ public class CommonSoapProperties {
         private String namespace;
 
         @Nullable
-        private List<KtSoapProperties.Param> params = new ArrayList<>();
+        private List<Param> params = new ArrayList<>();
     }
 
 

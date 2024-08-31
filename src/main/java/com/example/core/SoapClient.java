@@ -14,15 +14,13 @@ import cn.hutool.http.webservice.SoapRuntimeException;
 
 import com.example.enums.SoapProtocol;
 import com.example.utils.SoapUtil;
+import com.sun.xml.internal.messaging.saaj.soap.impl.ElementImpl;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.*;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author banana
@@ -109,25 +107,33 @@ public class SoapClient extends HttpBase<SoapClient> {
         return this;
     }
 
-    public SoapClient setPrefix(String prefix) throws SOAPException {
-        SOAPEnvelope envelope = this.message.getSOAPPart().getEnvelope();
-        String orginPrefix = envelope.getPrefix();
-        envelope.setPrefix(prefix);
-        envelope.getBody().setPrefix(prefix);
-        envelope.getHeader().setPrefix(prefix);
-        envelope.removeNamespaceDeclaration(orginPrefix);
+    public SoapClient setPrefix(String prefix) {
+        try {
+            SOAPEnvelope envelope = this.message.getSOAPPart().getEnvelope();
+            String orginPrefix = envelope.getPrefix();
+            envelope.setPrefix(prefix);
+            envelope.getBody().setPrefix(prefix);
+            envelope.getHeader().setPrefix(prefix);
+            envelope.removeNamespaceDeclaration(orginPrefix);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
-    public SoapClient addNameSpaceDeclaration(Map<String, String> nameSpaceDeclaration) throws SOAPException {
-        SOAPEnvelope envelope = this.message.getSOAPPart().getEnvelope();
-        nameSpaceDeclaration.forEach((k, v) -> {
-            try {
-                envelope.addNamespaceDeclaration(k, v);
-            } catch (SOAPException e) {
-                throw new RuntimeException(e);
-            }
-        });
+    public SoapClient addNameSpaceDeclaration(Map<String, String> nameSpaceDeclaration) {
+        try {
+            SOAPEnvelope envelope = this.message.getSOAPPart().getEnvelope();
+            nameSpaceDeclaration.forEach((k, v) -> {
+                try {
+                    envelope.addNamespaceDeclaration(k, v);
+                } catch (SOAPException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
@@ -250,6 +256,87 @@ public class SoapClient extends HttpBase<SoapClient> {
         return this.methodEle;
     }
 
+
+    /**
+     * 根据方法名称获取对应的方法元素
+     * @param method
+     * @return
+     */
+    public SOAPBodyElement getMethodEleByName(String method) {
+        return getMethodEleByNameAndNUrl(method, "");
+    }
+
+    /**
+     * 根据方法名称&命名空间获取对应的方法元素
+     * @param method
+     * @return
+     */
+    public SOAPBodyElement getMethodEleByNameAndNUrl(String method, String namespaceURI) {
+        String[] split = method.split(":");
+        QName qName = null;
+        if(split.length == 2) {
+            String prefix = split[0];
+            String methodName = split[1];
+            qName = new QName(namespaceURI, methodName, prefix);
+        } else {
+            String methodName = method;
+            qName = new QName(namespaceURI, methodName);
+        }
+        return getMethodEleByQName(qName);
+    }
+
+
+    /**
+     * 获取指定的方法元素
+     * @param qName qname入参
+     * @return
+     */
+    private SOAPBodyElement getMethodEleByQName(QName qName) {
+
+        // 声明出参
+        SOAPBodyElement rtn = null;
+
+        // 获取body中的元素（即方法）
+        SOAPBodyElement soapBodyElement = getMethodEle();
+
+        // qName相关参数
+        String prefix = qName.getPrefix();
+        String localPart = qName.getLocalPart();
+        String namespaceURI = qName.getNamespaceURI();
+
+        // 从后向前遍历
+        while(soapBodyElement != null) {
+            // 当前元素的QName
+            QName elementQName = soapBodyElement.getElementQName();
+
+            if(Objects.equals(elementQName.getPrefix(), prefix)
+                    && Objects.equals(elementQName.getLocalPart(), localPart)) {
+                rtn = soapBodyElement;
+                break;
+            }
+            soapBodyElement = (SOAPBodyElement) soapBodyElement.getPreviousSibling();
+        }
+        return rtn;
+    }
+
+
+    public SOAPElement getParamFromMethodByName(SOAPBodyElement method, String paramName) {
+        return null;
+    }
+
+    private SOAPElement getParamFromMethodByQName(SOAPBodyElement method, QName paramQName) {
+
+        // 获取头部的参数
+        SOAPElement headParam = (SOAPElement) method.getFirstChild();
+
+        while(headParam != null) {
+
+            headParam = (SOAPElement) headParam.getNextSibling();
+        }
+
+        return null;
+    }
+
     public SOAPMessage getMessage() {
         return this.message;
     }
@@ -335,7 +422,7 @@ public class SoapClient extends HttpBase<SoapClient> {
         return SoapUtil.toString(this.message, pretty, this.charset);
     }
 
-    private static SOAPElement setParam(SOAPElement ele, String name, Object value, String prefix) {
+    public static SOAPElement setParam(SOAPElement ele, String name, Object value, String prefix) {
         SOAPElement childEle;
         SOAPException e;
         try {
