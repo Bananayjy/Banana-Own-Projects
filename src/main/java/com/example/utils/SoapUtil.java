@@ -10,16 +10,18 @@ import com.example.config.CommonSoapProperties;
 import com.example.core.SoapClient;
 import com.example.entity.Body;
 import com.example.enums.SoapProtocol;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.soap.*;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +34,6 @@ import java.util.stream.Collectors;
  */
 public class SoapUtil {
 
-    private static String CDATAStr = "<![CDATA[*]]>";
 
     public static SoapClient createClient(String url) {
         return SoapClient.create(url);
@@ -61,6 +62,10 @@ public class SoapUtil {
     }
 
 
+    /**
+     * 根据配置文件场景对应的soap请求客户端
+     * @return soap请求客户端
+     */
     public static SoapClient careatClientByProperties() {
         CommonSoapProperties commonSoapProperties = SpringUtils.getBean("commonSoapProperties");
         System.out.println(commonSoapProperties);
@@ -89,40 +94,51 @@ public class SoapUtil {
     }
 
     /**
-     * 对象转Xml格式
-     * @param object 对象，字段需要使用相关注解修饰{@link javax.xml.bind.annotation.XmlElement}
-     * @param ifCDATA 是否CDATA格式
-     * @return xml格式
+     * 从soap请求/响应中，根据命名空间和标签名获取其中相关内容
+     * @param soapContent soap内容
+     * @param SoapProtocol soap协议常量 {@link SoapProtocol}
+     * @param ns 命名空间
+     * @param tagName 标签名
+     * @return 内容
      */
-    public static String ObjectToXml(Object object, boolean ifCDATA) {
+    public static String getSoapElementByTagNameNS(String soapContent, SoapProtocol SoapProtocol, String ns, String tagName) {
 
         // 声明出参
-        String xmlString = null;
+        String rtn = null;
 
         try {
-            JAXBContext context = JAXBContext.newInstance(Body.class);
-            Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
-            marshaller.marshal(object, System.out);
+            soapContent = XmlUtil.format(soapContent);
 
-            StringWriter writer = new StringWriter();
-            marshaller.marshal(object, writer);
+            MessageFactory msgFactory = MessageFactory.newInstance(SoapProtocol.getDesc());
+            SOAPMessage message = msgFactory.createMessage(new MimeHeaders(),
+                    new ByteArrayInputStream(soapContent.getBytes("UTF-8")));
 
-            xmlString = writer.toString();
-            System.out.println(xmlString);
+            SOAPBody soapBody = message.getSOAPBody();
 
-            // 去掉格式定义
-            xmlString = xmlString.replaceFirst("<.*?>", "");
-
-            if(ifCDATA) {
-                xmlString = CDATAStr.replace("*", xmlString);
+            NodeList resultNodes = soapBody.getElementsByTagNameNS(ns, tagName);
+            if (resultNodes.getLength() > 0) {
+                Node resultNode = resultNodes.item(0);
+                rtn = resultNode.getTextContent();
+                System.out.println(rtn);
             }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        return xmlString;
+        return rtn;
+
+
+        /*方法二：DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(new ByteArrayInputStream(soapResp.getBytes("UTF-8")));
+        document.getDocumentElement().normalize();
+        NodeList result1 = document.getElementsByTagName("won:result");
+        if(result1.getLength() > 0) {
+            String textContent = result1.item(0).getTextContent();
+            System.out.println(textContent);
+        }*/
+
     }
 
     public static String toString(SOAPMessage message, boolean pretty) {

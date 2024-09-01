@@ -12,7 +12,7 @@ import java.util.List;
 public class Response {
     private String retCode;
     private String retInfo;
-    private List<PubEmpKszr> pubEmpKszrList;
+    private List<DeptPeople.dept> pubEmpKszrList;
 
     @XmlElement(name = "ret_code")
     public String getRetCode() {
@@ -33,11 +33,11 @@ public class Response {
     }
 
     @XmlElement(name = "PUB_EMP_KSZR")
-    public List<PubEmpKszr> getPubEmpKszrList() {
+    public List<DeptPeople.dept> getPubEmpKszrList() {
         return pubEmpKszrList;
     }
 
-    public void setPubEmpKszrList(List<PubEmpKszr> pubEmpKszrList) {
+    public void setPubEmpKszrList(List<DeptPeople.dept> pubEmpKszrList) {
         this.pubEmpKszrList = pubEmpKszrList;
     }
 }
