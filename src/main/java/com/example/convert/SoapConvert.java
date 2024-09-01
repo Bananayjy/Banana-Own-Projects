@@ -23,13 +23,13 @@ public class SoapConvert {
      * @param ifCDATA 是否CDATA格式
      * @return xml格式
      */
-    public static String ObjectToXml(Object object, boolean ifCDATA) {
+    public static <T> String ObjectToXml(T object, Class<T> clazz, boolean ifCDATA) {
 
         // 声明出参
         String xmlString = null;
 
         try {
-            JAXBContext context = JAXBContext.newInstance(Body.class);
+            JAXBContext context = JAXBContext.newInstance(clazz);
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
             marshaller.marshal(object, System.out);
