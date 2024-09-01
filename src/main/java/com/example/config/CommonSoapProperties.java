@@ -1,20 +1,32 @@
 package com.example.config;
 
+import cn.hutool.extra.spring.SpringUtil;
+import cn.hutool.json.JSONUtil;
+import com.example.enums.TplNumEnum;
+import com.example.factory.SoapPropertiesFactory;
+import com.example.utils.SpringUtils;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
+ * 通用soap请求配置
  * @author banana
  * @create 2024-08-29 17:54
  */
 @Data
+@Slf4j
 @Configuration
 @ConfigurationProperties("soap")
 public class CommonSoapProperties {
@@ -35,51 +47,71 @@ public class CommonSoapProperties {
     private boolean ifCDATA;
 
     /**
+     * 模版 {@link TplNumEnum}
+     * 0：自定义
+     * 1：金唐请求通用模板 （默认值）
+     * ……
+     */
+    private Integer TplNum = 1;
+
+    /**
      * 自定义命名空间
      * key:名称 value:命名空间
      */
     private Map<String, String> nameSpaceDeclaration;
 
-
-    /**
-     * 自定义方法
-     */
-
     /**
      * 方法
      */
-    @Nullable
-    private Method method;
+    /*@Nullable*/
+    private List<Method> methods;
 
+
+    /*public abstract void delPropertiesByTplNum();*/
+
+    /*@Bean
+    public TstP createTstP() {
+        return new TstP();
+    }*/
 
     @Data
-    static class Method {
+    public static class Method {
 
         /**
          * 方法名称
          */
-        @NonNull
+        /*@NonNull*/
         private String methodName;
 
         /**
          * 方法命名空间，可不填
          */
-        @Nullable
+        /*@Nullable*/
         private String namespace;
 
-        @Nullable
-        private List<Param> params = new ArrayList<>();
+        /*@Nullable*/
+        private List<Param> params;
     }
 
 
     @Data
-    static class Param {
+    public static class Param {
 
-        @NonNull
+        /*@NonNull*/
         private String name;
 
-        @NonNull
+        /*@NonNull*/
         private Object value;
+    }
+
+    @PostConstruct
+    public void init() {
+        log.info("===== 通用soap请求配置开始初始化 =====");
+        log.info("当前信息:{}", this);
+
+        // 根据配置中的TplNum进行配置修改
+        CommonSoapProperties commonSoapProperties = SoapPropertiesFactory.getSoapProperties(TplNum, this);
+        System.out.println(commonSoapProperties);
     }
 
 }

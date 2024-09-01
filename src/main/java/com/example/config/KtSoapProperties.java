@@ -1,73 +1,49 @@
 package com.example.config;
 
 import lombok.Data;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.annotation.Order;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * 金唐通用soap请求
- *
- * 绑定示例：
- * kt-soap:
- *   method:
- *     methodName: "exampleMethod"
- *     namespace: "http://example.com/namespace"
- *     params:
- *       - name: "param1"
- *         value: "value1"
- *       - name: "param2"
- *         value: 123
- *       - name: "param3"
- *         value: true
+ * 金唐通用soap请求（模版号=1）
  *
  * @author banana
  * @create 2024-08-31 9:48
  */
 @Data
-@Configuration
-@ConfigurationProperties("kt-soap")
-public class KtSoapProperties {
+public class KtSoapProperties extends CommonSoapProperties  {
 
-    /**
-     * 方法
-     */
-    @Nullable
-    private Method method;
+    public void delPropertiesByTplNum() {
 
-
-    @Data
-    static class Method {
-
-        /**
-         * 方法名称
-         */
-        @NonNull
-        private String methodName;
-
-        /**
-         * 方法命名空间，可不填
-         */
-        @Nullable
-        private String namespace;
-
-        @Nullable
-        private List<Param> params = new ArrayList<>();
     }
 
 
-    @Data
-    static class Param {
 
-        @NonNull
-        private String name;
 
-        @NonNull
-        private Object value;
-    }
+   /* @PostConstruct
+    public void init() {
+        // 自定义命名空间
+        Map<String, String> defaultNameSpaceDeclaration = new HashMap<String, String>();
+        defaultNameSpaceDeclaration.put("won", "www.WondersHSBP.com");
+        nameSpaceDeclaration = defaultNameSpaceDeclaration;
 
+        // 自定义方法&参数
+        Method method = new Method();
+        method.setMethodName("won:invokeRequest");
+        Param param = new Param();
+        param.setName("parameter");
+        method = method;
+
+    }*/
 }

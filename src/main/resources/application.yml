@@ -1,3 +1,22 @@
 server:
     port: 6666
 
+# soap配置文件注入测试
+soap:
+    url: www.baidu.com
+    nameSpacePrefix: soap
+    ifCDATA: true
+    nameSpaceDeclaration:
+        won: www.baidu1.com
+    methods:
+        - methodName: myMethod
+          namespace: http://mynamespace.com
+          params:
+            - name: param1
+              value: value1
+            - name: param2
+              value: value2
+
+
+
+

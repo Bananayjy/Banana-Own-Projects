@@ -11,12 +11,14 @@ import com.example.entity.Response;
 import com.example.enums.SoapProtocol;
 import com.example.utils.SoapUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -30,6 +32,7 @@ import java.util.*;
  * @author banana
  * @create 2024-08-29 20:48
  */
+@Component
 @Slf4j
 public class TEST {
     // 通用配置文件
@@ -193,52 +196,30 @@ public class TEST {
 
         // 根据场景的实体类生成
 
-        String xmlString = null;
+        // Create sample data
+        PubEmpKszr kszr1 = new PubEmpKszr();
+        kszr1.setId("110");
+        kszr1.setName("皮肤科");
+        kszr1.setKzrId("13065");
+        kszr1.setKzr("章森苗");
 
-        try {
-            // Create sample data
-            PubEmpKszr kszr1 = new PubEmpKszr();
-            kszr1.setId("110");
-            kszr1.setName("皮肤科");
-            kszr1.setKzrId("13065");
-            kszr1.setKzr("章森苗");
+        PubEmpKszr kszr2 = new PubEmpKszr();
+        kszr2.setId("77");
+        kszr2.setName("物业公司");
 
-            PubEmpKszr kszr2 = new PubEmpKszr();
-            kszr2.setId("77");
-            kszr2.setName("物业公司");
+        Response response = new Response();
+        response.setRetCode("0");
+        response.setRetInfo("success");
+        response.setPubEmpKszrList(new ArrayList<>());
+        response.getPubEmpKszrList().add(kszr1);
+        response.getPubEmpKszrList().add(kszr2);
 
-            Response response = new Response();
-            response.setRetCode("0");
-            response.setRetInfo("success");
-            response.setPubEmpKszrList(new ArrayList<>());
-            response.getPubEmpKszrList().add(kszr1);
-            response.getPubEmpKszrList().add(kszr2);
+        Body body = new Body();
+        body.setResponse(response);
 
-            Body body = new Body();
-            body.setResponse(response);
+        String s = SoapUtil.ObjectToXml(body, false);
+        System.out.println(s);
 
-            // Convert to XML
-            JAXBContext context = JAXBContext.newInstance(Body.class);
-            Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
-            marshaller.marshal(body, System.out);
-
-            StringWriter writer = new StringWriter();
-            marshaller.marshal(body, writer);
-
-            xmlString = writer.toString();
-            System.out.println(xmlString);
-
-
-            // 去掉格式定义
-            xmlString = xmlString.replaceFirst("<.*?>", "");
-
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
-
-        String replace = CDATAStr.replace("*", xmlString);
-        System.out.println(replace);
 
     }
 
