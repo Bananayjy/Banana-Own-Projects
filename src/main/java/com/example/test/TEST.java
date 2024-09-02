@@ -1,28 +1,18 @@
 package com.example.test;
 
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.core.util.XmlUtil;
-import com.example.config.CommonSoapProperties;
-import com.example.core.ElementNode;
-import com.example.entity.Body;
+import com.example.model.entity.Body;
 import com.example.convert.SoapConvert;
 import com.example.enums.SoapProtocol;
 import com.example.utils.SoapUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 
 import javax.annotation.PostConstruct;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.soap.*;
 import javax.xml.xpath.*;
-import java.io.ByteArrayInputStream;
 import java.util.*;
 
 /**
@@ -32,77 +22,6 @@ import java.util.*;
 @Component
 @Slf4j
 public class TEST {
-    // 通用配置文件
-    private CommonSoapProperties commonSoapProperties;
-
-    // 默认命名空间
-    static Map<String, String> defaultNameSpaceDeclaration = new HashMap<>();
-
-    // 默认请求头
-    static List<ElementNode> defualtHeadElementNode = new ArrayList<>();
-
-    // 默认请求体
-    static List<ElementNode> defaultBodyElementNode = new ArrayList<>();
-
-    // 命名空间的前缀
-    final private String nameSpacePrefix = "soapenv";
-
-    static String CDATAStr = "<![CDATA[*]]>";
-
-
-
-    public String getSoapBody(Map<String, String> nameSpaceDeclaration, List<ElementNode> headElementNode, List<ElementNode> bodyElementNode){
-        String ret = null;
-        try{
-
-
-
-        } catch (Exception ex) {
-            log.error("生成soap请求消息时发生异常：{}", ex.getMessage(), ex);
-        }
-
-        return ret;
-    }
-
-    // 构建soap请求体
-    static private void SoapBodyBuilder(SOAPBody body, List<ElementNode> bodyElementNode) throws SOAPException {
-        for (ElementNode elementNode : bodyElementNode) {
-            String value = elementNode.getValue();
-            String nameSpace = elementNode.getNamespace();
-            SOAPElement root = body.addChildElement(value, nameSpace);
-            SoapBodyBuilderRecursion(root, elementNode);
-        }
-        return;
-    }
-
-    static private void SoapBodyBuilderRecursion(SOAPElement root, ElementNode elementNode) throws SOAPException {
-        SOAPElement soapElement = root.addChildElement(elementNode.getValue(), elementNode.getNamespace());
-        if(StrUtil.isNotBlank(elementNode.getContent())) {
-            soapElement.addTextNode(elementNode.getContent());
-        }
-        for (ElementNode child : elementNode.getChildren()) {
-            SoapBodyBuilderRecursion(soapElement, child);
-        }
-        return;
-    }
-
-    // 初始化默认值
-    @PostConstruct
-    public void initDefaultValue(){
-        // 默认请求头（空）
-        defaultNameSpaceDeclaration.put("won", "www.WondersHSBP.com");
-        defaultNameSpaceDeclaration.put("soapenv", "http://schemas.xmlsoap.org/soap/envelope/");
-
-        // 默认请求体
-        ElementNode rootElementNode = new ElementNode("invokeRequest", "won");
-        ElementNode childElementNode = new ElementNode("parameter", "won");
-        rootElementNode.addChildElementNode(childElementNode);
-        defaultBodyElementNode.add(rootElementNode);
-
-        /*getSoapMessage(null);*/
-
-
-    }
 
     // 请求相关测试
     /*public static void main(String[] args) throws SOAPException, IOException {

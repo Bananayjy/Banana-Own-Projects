@@ -1,4 +1,4 @@
-package com.example.entity;
+package com.example.model.entity;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;

@@ -1,7 +1,5 @@
 package com.example.convert;
 
-import com.example.entity.Body;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;

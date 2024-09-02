@@ -8,18 +8,10 @@ import cn.hutool.core.util.XmlUtil;
 import cn.hutool.http.webservice.SoapRuntimeException;
 import com.example.config.CommonSoapProperties;
 import com.example.core.SoapClient;
-import com.example.entity.Body;
 import com.example.enums.SoapProtocol;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.soap.*;
 import java.io.*;
 import java.nio.charset.Charset;
