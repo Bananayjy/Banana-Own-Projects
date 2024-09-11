@@ -1,24 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!--指定POM文件的版本-->
     <modelVersion>4.0.0</modelVersion>
+
+    <!--指定父模块：其是一个pom，指定了一些相关的版本-->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.10</version>
+        <version>2.2.1.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>com.example</groupId>
     <artifactId>demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <description>Banana 香蕉王子的Web架构测试</description>
+    <packaging>pom</packaging>
+    <description>Banana 香蕉王子的cloud微服务架构测试</description>
+
+
+    <!--子模块-->
+    <modules>
+        <module>example-server</module>
+        <module>gateway</module>
+    </modules>
+
 
     <properties>
         <java.version>8</java.version>
+        <spring-cloud.version>Hoxton.RELEASE</spring-cloud.version>
+        <spring-clound-alibaba.version>2.1.0.RELEASE</spring-clound-alibaba.version>
     </properties>
 
+    <!--依赖版本管理-->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-clound-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!--<properties>
+        &lt;!&ndash;jdk版本&ndash;&gt;
+        <java.version>8</java.version>
+        <spring-cloud.version>Hoxton.RELEASE</spring-cloud.version>
+    </properties>
+
+
+
     <dependencies>
-        <!--①核心依赖-->
+        &lt;!&ndash;①核心依赖&ndash;&gt;
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -30,27 +74,27 @@
             <scope>test</scope>
         </dependency>
 
-        <!--②扩展依赖-->
-        <!--lombok-->
+        &lt;!&ndash;②扩展依赖&ndash;&gt;
+        &lt;!&ndash;lombok&ndash;&gt;
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
         </dependency>
 
-        <!--③数据库相关-->
+        &lt;!&ndash;③数据库相关&ndash;&gt;
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>8.0.32</version>
         </dependency>
-        <!--mybatis-->
+        &lt;!&ndash;mybatis&ndash;&gt;
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>3.5.3.1</version>
         </dependency>
-        <!-- druid 连接池 **-->
+        &lt;!&ndash; druid 连接池 **&ndash;&gt;
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
@@ -66,6 +110,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
 
 </project>

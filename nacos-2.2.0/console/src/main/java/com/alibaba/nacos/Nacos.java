@@ -24,6 +24,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 /**
  * Nacos starter.
  *
+ * 说明：
+ * 1、启动需要配置JVM启动参数：
+ * -Dnacos.standalone=true
+ * -Dnacos.home=D:\codesaver\Banana-project\Banana-own-projects\logs 否则启动会报错
+ *
+ *
+ *
  * @author nacos
  */
 @SpringBootApplication(scanBasePackages = "com.alibaba.nacos")

@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: example-server
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.56.1:8848
+
+server:
+  # 端口号
+  port: 8081
