@@ -13,26 +13,33 @@
     </parent>
 
     <groupId>com.example</groupId>
-    <artifactId>demo</artifactId>
+    <artifactId>banana</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <description>Banana 香蕉王子的cloud微服务架构测试</description>
+    <description>cloud微服务架构测试</description>
 
-
-    <!--子模块-->
+    <!--
+   子模块:为模块的名称指定
+    -->
     <modules>
+        <!--测试1微服务-->
         <module>example-server</module>
+        <!--测试2微服务-->
+        <module>example2-server</module>
+        <!--网关-->
         <module>gateway</module>
+        <!--nacos注册/配置中心-->
+        <module>nacos-2.2.0</module>
     </modules>
 
-
+    <!--配置-->
     <properties>
         <java.version>8</java.version>
         <spring-cloud.version>Hoxton.RELEASE</spring-cloud.version>
         <spring-clound-alibaba.version>2.1.0.RELEASE</spring-clound-alibaba.version>
     </properties>
 
-    <!--依赖版本管理-->
+    <!-- 依赖版本管理 -->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -42,7 +49,10 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
+            <!--
+            nacos 注册/发现中心依赖
+            版本匹配问题：https://blog.csdn.net/m0_64788735/article/details/139027594
+            -->
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>
@@ -52,64 +62,5 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <!--<properties>
-        &lt;!&ndash;jdk版本&ndash;&gt;
-        <java.version>8</java.version>
-        <spring-cloud.version>Hoxton.RELEASE</spring-cloud.version>
-    </properties>
-
-
-
-    <dependencies>
-        &lt;!&ndash;①核心依赖&ndash;&gt;
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        &lt;!&ndash;②扩展依赖&ndash;&gt;
-        &lt;!&ndash;lombok&ndash;&gt;
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
-        </dependency>
-
-        &lt;!&ndash;③数据库相关&ndash;&gt;
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>8.0.32</version>
-        </dependency>
-        &lt;!&ndash;mybatis&ndash;&gt;
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.5.3.1</version>
-        </dependency>
-        &lt;!&ndash; druid 连接池 **&ndash;&gt;
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
-            <version>1.2.9</version>
-        </dependency>
-
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>-->
 
 </project>

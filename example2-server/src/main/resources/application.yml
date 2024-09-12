@@ -1,11 +1,11 @@
 server:
   # 端口号
-  port: 8081
+  port: 8082
 
 spring:
   application:
     # 服务名称
-    name: example-server
+    name: example2-server
   cloud:
     nacos:
       discovery:
