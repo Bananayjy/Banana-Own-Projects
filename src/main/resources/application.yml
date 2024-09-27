@@ -1,8 +1,13 @@
 server:
     port: 6666
 
-
 spring:
+  # 配置国际化i18n
+  messages:
+    # 在i18n文件下message开头的配置文件
+    basename: i18n/messages
+    # 指定编码格式
+    encoding: UTF-8
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:

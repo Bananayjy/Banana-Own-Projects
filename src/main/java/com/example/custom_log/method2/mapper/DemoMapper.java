@@ -1,13 +1,9 @@
-package com.example.mapper;
+package com.example.custom_log.method2.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.model.entity.Demo;
+import com.example.custom_log.method2.entity.Demo;
 import org.apache.ibatis.annotations.Mapper;
 
-/**
- * @author banana
- * @create 2023-12-05 20:30
- */
 @Mapper
 public interface DemoMapper extends BaseMapper<Demo> {
 
