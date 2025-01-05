@@ -214,5 +214,33 @@ class DemoApplicationTests {
     }
 
 
+    // ================ 二级缓存测试  =====================
+    @Test
+    public void testSecondLevelCache() throws IOException {
+        SqlSessionFactory sqlSessionFactory = getSqlSessionFactory();
+        // 开启两个会话
+        SqlSession openSession = sqlSessionFactory.openSession();
+        SqlSession openSession2 = sqlSessionFactory.openSession();
+        try {
+            DemoMapper mapper = openSession.getMapper(DemoMapper.class);
+            DemoMapper mapper2 = openSession2.getMapper(DemoMapper.class);
+
+            Demo demo1 = mapper.getById(1);
+            System.out.println("demo1:" + demo1);
+            // 一定要把第一个会话关了（查询的数据会先放到一级缓存中，只有会话提交或关掉后才会放到二级缓存中）
+            openSession.close();
+
+            // 第二次查询是从二级缓存中拿到的数据，并没有发送新的sql
+            Demo demo2 = mapper2.getById(1);
+            System.out.println("demo2:" + demo2);
+            openSession.close();
+
+            System.out.println(demo1 == demo2);
+
+        } finally {
+            openSession.close();
+        }
+    }
+
 
 }
