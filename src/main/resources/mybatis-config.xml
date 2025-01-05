@@ -5,14 +5,14 @@
 <configuration>
 
 	<!-- plugins: 注册插件 -->
-	<plugins>
+	<!--<plugins>
 		<plugin interceptor="com.example.plugin.MyPlugin">
 			<property name="username" value="root"/>
 			<property name="password" value="12345"/>
 		</plugin>
 		<plugin interceptor="com.example.plugin.MyPlugin2">
 		</plugin>
-	</plugins>
+	</plugins>-->
 	<environments default="development">
 		<environment id="development">
 			<transactionManager type="JDBC" />

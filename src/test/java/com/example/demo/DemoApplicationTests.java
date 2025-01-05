@@ -77,6 +77,141 @@ class DemoApplicationTests {
 
 
 
+    // ================ 一级缓存测试  =====================
+
+
+    // 一级缓存测试
+    @Test
+    public void testFirstLevelCache() throws IOException {
+        // 1、获取sqlSessionFactory对象
+        SqlSessionFactory sqlSessionFactory = getSqlSessionFactory();
+        // 2、获取sqlSession对象（一个sqlSession对象代表和数据库的一次会话   ）
+        SqlSession openSession = sqlSessionFactory.openSession();
+        try {
+            // 3、获取接口的实现类对象
+            //会为接口自动的创建一个代理对象，代理对象去执行增删改查方法
+            DemoMapper mapper = openSession.getMapper(DemoMapper.class);
+            Demo demo1 = mapper.getById(1);
+            System.out.println("demo1:" + demo1);
+
+            // 再次查询
+            Demo demo2 = mapper.getById(1);
+            System.out.println("demo2:" + demo2);
+            System.out.println(demo1 == demo2);
+        } finally {
+            openSession.close();
+        }
+    }
+
+    // 一级缓存失效（不同SqlSession，即不同会话）
+    @Test
+    public void testFirstLevelCache2() throws IOException {
+        SqlSessionFactory sqlSessionFactory = getSqlSessionFactory();
+        SqlSession openSession = sqlSessionFactory.openSession();
+        Demo demo1, demo2;
+        try {
+            DemoMapper mapper = openSession.getMapper(DemoMapper.class);
+            demo1 = mapper.getById(1);
+            System.out.println("demo1:" + demo1);
+        } finally {
+            openSession.close();
+        }
+
+        SqlSession openSession2 = sqlSessionFactory.openSession();
+
+        try {
+            DemoMapper mapper = openSession2.getMapper(DemoMapper.class);
+            // 再次查询
+            demo2 = mapper.getById(1);
+            System.out.println("demo2:" + demo2);
+        } finally {
+            openSession2.close();
+        }
+        System.out.println(demo1 == demo2);
+    }
+
+
+    // 一级缓存失效(SqlSession相同，查询条件不同)
+    @Test
+    public void testFirstLevelCache3() throws IOException {
+        // 1、获取sqlSessionFactory对象
+        SqlSessionFactory sqlSessionFactory = getSqlSessionFactory();
+        // 2、获取sqlSession对象（一个sqlSession对象代表和数据库的一次会话   ）
+        SqlSession openSession = sqlSessionFactory.openSession();
+        try {
+            // 3、获取接口的实现类对象
+            //会为接口自动的创建一个代理对象，代理对象去执行增删改查方法
+            DemoMapper mapper = openSession.getMapper(DemoMapper.class);
+            Demo demo1 = mapper.getById(1);
+            System.out.println("demo1:" + demo1);
+
+            // 再次查询
+            Demo demo2 = mapper.getById(2);
+            System.out.println("demo2:" + demo2);
+            System.out.println(demo1 == demo2);
+        } finally {
+            openSession.close();
+        }
+    }
+
+
+    // 一级缓存失效(SqlSession相同，两次查询之间执行了增删改查)
+    @Test
+    public void testFirstLevelCache4() throws IOException {
+        // 1、获取sqlSessionFactory对象
+        SqlSessionFactory sqlSessionFactory = getSqlSessionFactory();
+        // 2、获取sqlSession对象（一个sqlSession对象代表和数据库的一次会话   ）
+        SqlSession openSession = sqlSessionFactory.openSession();
+        try {
+            // 3、获取接口的实现类对象
+            //会为接口自动的创建一个代理对象，代理对象去执行增删改查方法
+            DemoMapper mapper = openSession.getMapper(DemoMapper.class);
+            Demo demo1 = mapper.getById(1);
+            System.out.println("demo1:" + demo1);
+
+            // 新增操作
+            Demo demo = new Demo();
+            demo.setId(99);
+            demo.setName("hahha");
+            mapper.addDemo(demo);
+
+            // 再次查询
+            Demo demo2 = mapper.getById(1);
+            System.out.println("demo2:" + demo2);
+            System.out.println(demo1 == demo2);
+
+        } finally {
+            openSession.commit();
+            openSession.close();
+        }
+    }
+
+    // 一级缓存失效(SqlSession相同，手动清除一级缓存)
+    @Test
+    public void testFirstLevelCache5() throws IOException {
+        // 1、获取sqlSessionFactory对象
+        SqlSessionFactory sqlSessionFactory = getSqlSessionFactory();
+        // 2、获取sqlSession对象（一个sqlSession对象代表和数据库的一次会话   ）
+        SqlSession openSession = sqlSessionFactory.openSession();
+        try {
+            // 3、获取接口的实现类对象
+            //会为接口自动的创建一个代理对象，代理对象去执行增删改查方法
+            DemoMapper mapper = openSession.getMapper(DemoMapper.class);
+            Demo demo1 = mapper.getById(1);
+            System.out.println("demo1:" + demo1);
+
+            // 手动清除一级缓存
+            openSession.clearCache();
+
+            // 再次查询
+            Demo demo2 = mapper.getById(1);
+            System.out.println("demo2:" + demo2);
+            System.out.println(demo1 == demo2);
+
+        } finally {
+            openSession.close();
+        }
+    }
 
 
 
