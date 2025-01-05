@@ -2,6 +2,8 @@ package com.example.plugin;
 
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.plugin.*;
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.SystemMetaObject;
 
 import java.sql.Statement;
 import java.util.Properties;
@@ -28,6 +30,18 @@ public class MyPlugin implements Interceptor {
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
         System.out.println("拦截目标对象执行：" + invocation.getMethod());
+
+        // 动态改变sql的参数 id=1 ===> id=2
+        Object target = invocation.getTarget();
+        System.out.println("被拦截的对象：" + target);
+
+        // 拿到StatementHandler中parameterHandler对象的parameterObject
+        // target元数据
+        MetaObject metaObject = SystemMetaObject.forObject(target);
+        Object value = metaObject.getValue("parameterHandler.parameterObject");
+        System.out.println("当前sql语句的参数:" + value);
+        metaObject.setValue("parameterHandler.parameterObject", 2);
+
         // 执行目标方法
         Object proceed = invocation.proceed();
         return proceed;
