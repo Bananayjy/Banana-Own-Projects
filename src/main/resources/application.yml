@@ -1,7 +1,6 @@
 server:
     port: 6666
 
-
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
@@ -10,3 +9,13 @@ spring:
       username: ${MYSQL_USER:root}
       password: ${MYSQL_PWD:123456}
       url: jdbc:mysql://localhost:3306/test?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowMultiQueries=true&allowPublicKeyRetrieval=true
+  redis:  # redis约定配置
+    host: 192.168.56.10   # Redis 服务器的主机地址，通常是localhost或者IP地址。
+    port: 6379    # Redis 服务器的端口，默认是6379。
+    # poassword: 12345   # redis密码
+    database: 0 # Redis数据库的索引，Redis默认有16个数据库（0到15），这里配置的是选择第0个数据库。
+    lettuce:  # 配置Lettuce客户端相关的连接池设置
+      pool:   # 连接池的设置
+        max-idle: 8   # 连接池中最多可以空闲的连接数，超过这个数目时，空闲连接会被销毁。
+        max-active: 32     # 连接池中最多可以活动的连接数，也就是最多可以同时与Redis进行通信的连接数。
+        min-idle: 8    # 连接池中最少保持的空闲连接数，少于这个数目时，会创建新的连接。
